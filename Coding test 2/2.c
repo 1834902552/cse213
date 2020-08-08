@@ -1,218 +1,135 @@
-#include<stdio.h>
-#include<stdlib.h>
+include <stdio.h>
+#include <stdlib.h>
 typedef struct node
 {
-    int value;
+    int data;
     struct node *next;
 } Node;
-void menu();
-Node* create_list();
-Node* insert_before(Node *temp, int key, int value);
-Node* delete_front(Node *temp);
-Node* copy_list_recursive(Node *copy);
-int front(Node *temp);
-Node* print_reverse(Node *list);
-void print_list(Node *temp);
-int main()
+
+void insert_after(Node **temp, int data)
 {
-    menu();
-    return 0;
-}
-void menu()
-{
-    Node *head = NULL;
-    Node *list = NULL;
-    head = create_list();
-    int value, option;
-    do
+    Node *new_node = (Node*)malloc(sizeof(Node));
+    Node* last = *temp;
+
+    new_node->data = data;
+    new_node->next = NULL;
+
+    if (*temp == NULL)
     {
-        system("cls");
-        printf("1. Insert Before\n");
-        printf("2. Delete Before\n");
-        printf("3. Copy Recursively\n");
-        printf("4. Front\n");
-        printf("5. Reverse\n");
-        printf("6. Display\n");
-        printf("7. Exit\n");
-        printf("Enter your Option : ");
-        scanf("%d", &option);
-        if(option == 1)
-        {
-            int key;
-            Node *head = NULL;
-            head = create_list();
-            print_list(head);
-            scanf("%d",&key);
-            head = insert_before(head, key, 100);
-            print_list(head);
-            getchar();
-            printf("\nPress Enter to Continue\n");
-            getchar();
-        }
-        else if(option == 2)
-        {
-            printf("Display List: ");
-            print_list(head);
-            head = delete_front(head);
-            printf("After Front Delete from List 1: ");
-            print_list(head);
-            getchar();
-            printf("\nPress Enter to Continue\n");
-            getchar();
-        }
-        else if (option == 3)
-        {
-            printf("Display List 1: ");
-            print_list(head);
-            list = copy_list_recursive(head);
-            printf("After Copy Recursively from List 1: ");
-            print_list(list);
-            getchar();
-            printf("\nPress Enter to Continue\n");
-            getchar();
-        }
-        else if(option == 4)
-        {
-            printf("%d\n", front(head));
-            getchar();
-            printf("\nPress Enter to Continue\n");
-            getchar();
-        }
-        else if(option == 5)
-        {
-            printf("Display List: ");
-            print_list(head);
-            head = print_reverse(head);
-            printf("Display List 1 in Reverse: ");
-            print_list(head);
-            getchar();
-            printf("\nPress Enter to Continue\n");
-            getchar();
-        }
-        else if(option == 6)
-        {
-            printf("Display List: ");
-            print_list(head);
-            getchar();
-            printf("\nPress Enter to Continue\n");
-            getchar();
-        }
-        else if (option == 7)
-        {
-            exit(0);
-        }
-        else
-        {
-            printf("\nInvalid Option, Please Option Between '1 to 7'");
-            getchar();
-            printf("\nPress Enter to Continue\n");
-            getchar();
-        }
+        *temp = new_node;
+        return;
     }
-    while(option != 7);
+
+    while (last->next != NULL)
+        last = last->next;
+
+    last->next = new_node;
+    return;
 }
-Node* create_list()
+
+void printList(Node * head)
 {
-    Node *a, *b, *c, *d;
-    a = (Node *) malloc(sizeof(Node));
-    b = (Node *) malloc(sizeof(Node));
-    c = (Node *) malloc(sizeof(Node));
-    d = (Node *) malloc(sizeof(Node));
-    a->value = 1;
-    a->next = b;
-    b->value = 2;
-    b->next = c;
-    c->value = 3;
-    c->next = d;
-    d->value = 4;
-    d->next = NULL;
-    return a;
-}
-int front(Node *temp){
-    if(temp!=NULL){
-        return temp->value;
-    }
-}
-Node* delete_front(Node *temp)
-{
-    if(temp)
+    while(head)
     {
-        Node *new_head = NULL;
-        new_head = temp->next;
-        free(temp);
-        return new_head;
+        printf("%d ", head->data );
+        head = head->next;
+    }
+
+    printf("\n");
+}
+void copylist(Node **copy, Node **temp)
+{
+    *copy=*temp;
+    printf("\n");
+}
+
+Node * MergeLists(Node *list1, Node *list2)
+{
+    if (!list1)
+        return list2;
+    if (!list2)
+        return list1;
+
+    Node *head;
+    if (list1->data < list2->data)
+    {
+        head = list1;
     }
     else
-        printf("Underflow Linked List");
-    return temp;
-}
-Node* copy_list_recursive(Node *copy)
-{
-    if(copy == NULL)
-        return NULL;
-    Node temp = (Node) malloc(sizeof (Node));
-    temp->value = copy->value;
-    temp->next = copy_list_recursive(copy->next) ;
-    return temp;
-}
-Node* insert_before(Node *temp, int key, int value)
-{
-    Node *prev, *head = temp;
-    int i = 0;
-    int j = 0;
-    while(temp)
     {
-        if(temp->value == key)
+        head = list2;
+        list2 = list1;
+        list1 = head;
+    }
+
+    while(list1->next && list2)
+    {
+        if (list1->next->data > list2->data)
         {
-            if(temp == head)
-            {
-                Node new_node = (Node) malloc(sizeof(Node*)) ;
-                new_node->value = value;
-                new_node->next = temp;
-                i++;
-                return new_node;
-            }
-            else
-            {
-                Node new_node = (Node) malloc(sizeof(Node*));
-                new_node->value = value;
-                new_node->next = temp;
-                prev->next = new_node;
-                j++;
-                return head;
-            }
+            Node *tmp = list1->next;
+            list1->next = list2;
+            list2 = tmp;
         }
-        prev = temp;
-        temp = temp->next;
+        list1 = list1->next;
     }
-    if(i<1 || i>4 || j<1 || j>4)
-    {
-        printf("Index out of range\n");
-        printf("Element Not Found\n");
-    }
+    if (!list1->next)
+        list1->next = list2;
     return head;
 }
-Node* print_reverse(Node *list)
+Node *back_after(Node **temp)
 {
-    Node *first, *current, *temp;
-    first = list;
-    current = list->next;
-    first->next = NULL;
-    while(current)
+    Node *ptr,*ptr1;
+    Node *head=*temp;
+    if(head == NULL)
     {
-        temp = current->next;
-        current->next = first;
-        first = current;
-        current = temp;
+        printf("\nlist is empty");
     }
-    return first;
+    else if(head->next == NULL)
+    {
+        head = NULL;
+        free(head);
+        printf("\nOnly node of the list deleted ...\n");
+    }
+
+    else
+    {
+        ptr = head;
+        while(ptr->next != NULL)
+        {
+            ptr1 = ptr;
+            ptr = ptr ->next;
+        }
+        ptr1->next = NULL;
+        free(ptr);
+    }
 }
-void print_list(Node *temp)
+int main()
 {
-    while(temp!=NULL)
-    {
-        printf("%d ",temp->value);
-        temp = temp->next;
-    }
-    printf("\n");
+    Node * temp1 = NULL;
+    Node * temp2 = NULL;
+    Node * copy = NULL;
+    int carry = 0 ;
+    insert_after(&temp1,7);
+    insert_after(&temp1,6);
+    insert_after(&temp1,4);
+    insert_after(&temp1,3);
+    insert_after(&temp2,10);
+    insert_after(&temp2,8);
+    insert_after(&temp2,1);
+    printf("\nprint list one: ");
+    printList(temp1);
+    printf("\nprint list two: ");
+    printList(temp2);
+    printf("\nMarge two List : ");
+    temp1 = MergeLists(temp1,temp2);
+    printList(temp1);
+    printf("\nDelete After : ");
+    back_after(&temp1);
+    printList(temp1);
+    printf("\nCopy list : ");
+    copylist(&copy,&temp1);
+    printList(copy);
+    printf("\nClear List -\n");
+    temp1=NULL;
+    return 0;
 }
